@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102521">
+  <title>StageRadar · Veille et candidatures</title>
+  <link rel="icon" href="/radar.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js?v=restore-thales"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#dashboard"><img src="/radar.svg" width="40" height="40" alt=""><span>StageRadar<small>Veille de stages</small></span></a>
+    <nav aria-label="Navigation principale">
+      <a href="#dashboard">Vue d’ensemble</a>
+      <a href="/suggestions">Suggestions</a>
+      <a href="#offers">Explorer les offres</a>
+      <a href="#applications">Candidatures</a>
+      <a href="#excluded">Offres exclues</a>
+      <a href="#profile">Mon CV</a>
+      <a href="#sources">Sources</a>
+      <a href="#settings">Paramètres</a>
+    </nav>
+    <p class="sidebar-footer">Espace de veille personnel</p>
+  </aside>
+  <main>
+    <header class="top">
+      <div><p class="eyebrow">TABLEAU DE BORD</p><h1 id="title">Vue d’ensemble</h1><p id="subtitle">Les dernières détections et le suivi de vos candidatures.</p></div>
+      <button id="open-import" class="primary">+ Importer une offre</button>
+    </header>
+    <p id="feedback" role="status" class="feedback" hidden></p>
+    <section id="dashboard" class="page" aria-label="Vue d’ensemble"></section>
+    <section id="suggestions" class="page" aria-label="Suggestions" aria-live="polite" hidden></section>
+    <section id="offers" class="page" aria-label="Explorer les offres" hidden>
+      <form id="filters" class="panel filters">
+        <label>Recherche<input name="q" type="search" placeholder="Pentest, Python, SOC…" maxlength="200"></label>
+        <label>Entreprise<input name="company" maxlength="250"></label>
+        <label>Localisation<input name="location" placeholder="Paris, Massy…" maxlength="200"></label>
+        <label>Source<select name="source" id="filter-source"><option value="">Toutes</option></select></label>
+        <label>Domaine<select name="domain" id="filter-domain"><option value="">Tous</option></select></label>
+        <label>Publié dans les<select name="published_days"><option value="">Toutes les périodes</option><option value="7">7 derniers jours</option><option value="30">30 derniers jours</option><option value="90">90 derniers jours</option></select></label>
+        <label>Score minimum<input name="min_score" type="number" min="0" max="100" value="0"></label>
+        <label>Tri<select name="sort"><option value="score">Pertinence</option><option value="published">Publication la plus récente</option><option value="date">Détection la plus récente</option></select></label>
+        <div class="checks">
+          <label><input name="favorite" type="checkbox" value="true"> Favoris</label>
+          <label><input name="hidden" type="checkbox" value="true"> Inclure les offres exclues</label>
+          <label><input name="expired" type="checkbox" value="true"> Inclure les expirées</label>
+        </div>
+        <div class="actions"><button type="reset" class="secondary">Réinitialiser</button><button class="primary">Rechercher</button></div>
+      </form>
+      <div id="offer-results" aria-live="polite"></div>
+    </section>
+    <section id="applications" class="page" aria-label="Candidatures" hidden>
+      <form id="application-filters" class="panel filter-inline">
+        <label>Statut<select name="state" id="application-state"></select></label><button class="primary">Afficher</button>
+      </form>
+      <div id="application-results"></div>
+    </section>
+    <section id="excluded" class="page" aria-label="Offres exclues" aria-live="polite" hidden></section>
+    <section id="profile" class="page" aria-label="Mon CV" hidden>
+      <form id="profile-form" class="panel editor">
+        <label class="wide">Importer un CV<input id="resume-file" type="file" accept=".pdf,.docx,.txt"></label>
+        <p id="resume-import-status" class="wide muted" role="status">PDF, DOCX ou TXT · 5 Mo maximum. Vérifiez le texte importé avant de lancer l’analyse.</p>
+        <label class="wide">Texte de votre CV<textarea name="text" rows="8" maxlength="60000" required></textarea></label>
+        <p class="wide muted">Le texte est traité localement et n’est pas enregistré.</p>
+        <button class="primary">Analyser</button>
+      </form>
+      <div id="profile-results" aria-live="polite"></div>
+    </section>
+    <section id="sources" class="page" aria-label="Sources" hidden></section>
+    <section id="settings" class="page" aria-label="Paramètres" hidden></section>
+  </main>
+  <dialog id="detail-dialog" aria-labelledby="detail-title">
+    <header class="detail-header">
+      <div><p id="detail-employer" class="eyebrow"></p><h2 id="detail-title">Offre</h2><p id="detail-location" class="muted"></p></div>
+      <form method="dialog"><button class="secondary" autofocus>Fermer</button></form>
+    </header>
+    <div id="detail-body"></div>
+  </dialog>
+  <dialog id="import-dialog" aria-labelledby="import-title">
+    <div class="dialog-header"><h2 id="import-title">Importer une offre</h2><form method="dialog"><button class="secondary">Fermer</button></form></div>
+    <form id="import-form" class="editor">
+      <label>Source<select name="platform" id="import-platform" required></select></label>
+      <label>Entreprise<input name="employer" required maxlength="250"></label>
+      <label>Intitulé<input name="title" required maxlength="350"></label>
+      <label>Localisation<input name="location" maxlength="500"></label>
+      <label class="wide">Lien de l’annonce<input name="original_url" type="url" required maxlength="2083"></label>
+      <label class="wide">Lien de candidature<input name="apply_url" type="url" maxlength="2083"></label>
+      <label>Type de contrat<input name="contract" placeholder="Stage" maxlength="100"></label>
+      <label>Durée en mois<input name="duration_months" type="number" min="1" max="36"></label>
+      <label>Date de début<input name="start_date" type="date"></label>
+      <label>Date de publication<input name="published_at" type="date"></label>
+      <label>Télétravail<input name="remote" maxlength="100"></label>
+      <label class="wide">Compétences séparées par des virgules<input name="skills"></label>
+      <label class="wide">Description<textarea name="description" rows="6" maxlength="200000"></textarea></label>
+      <p class="wide form-message" id="import-feedback" role="status"></p>
+      <button class="primary">Enregistrer l’offre</button>
+    </form>
+  </dialog>
+</body>
+</html>

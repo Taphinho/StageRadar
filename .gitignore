@@ -1,0 +1,23 @@
+.env
+.venv/
+data/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.py[cod]
+
+# Secrets, local tools and private documents
+.env.*
+!.env.example
+.agents/
+.aws/
+.codex/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.pem
+*.key
+*.log
+*.pdf
+*.docx
